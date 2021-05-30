@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Employment">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="employmentSerarchVO" type="egovframework.bizerp.hmr.employment.service.EmploymentDefaultVO"/>
+	
+	<resultMap id="employment" class="egovframework.bizerp.hmr.employment.service.EmploymentVO">
+		<result property="roleTypeIdFrom" column="ROLE_TYPE_ID_FROM" columnIndex="1"/>
+		<result property="roleTypeIdTo" column="ROLE_TYPE_ID_TO" columnIndex="2"/>
+		<result property="partyIdFrom" column="PARTY_ID_FROM" columnIndex="3"/>
+		<result property="partyIdTo" column="PARTY_ID_TO" columnIndex="4"/>
+		<result property="fromDate" column="FROM_DATE" columnIndex="5"/>
+		<result property="thruDate" column="THRU_DATE" columnIndex="6"/>
+		<result property="terminationReasonId" column="TERMINATION_REASON_ID" columnIndex="7"/>
+		<result property="terminationTypeId" column="TERMINATION_TYPE_ID" columnIndex="8"/>
+		<result property="lastUpdatedStamp" column="LAST_UPDATED_STAMP" columnIndex="9"/>
+		<result property="lastUpdatedTxStamp" column="LAST_UPDATED_TX_STAMP" columnIndex="10"/>
+		<result property="createdStamp" column="CREATED_STAMP" columnIndex="11"/>
+		<result property="createdTxStamp" column="CREATED_TX_STAMP" columnIndex="12"/>
+	</resultMap>
+	
+	<insert id="employmentDAO.insertEmployment_S">
+		<![CDATA[
+			INSERT INTO employment 
+				( ROLE_TYPE_ID_FROM
+				  , ROLE_TYPE_ID_TO
+				  , PARTY_ID_FROM
+				  , PARTY_ID_TO
+				  , FROM_DATE
+				  , THRU_DATE
+				  , TERMINATION_REASON_ID
+				  , TERMINATION_TYPE_ID
+				  , LAST_UPDATED_STAMP
+				  , LAST_UPDATED_TX_STAMP
+				  , CREATED_STAMP
+				  , CREATED_TX_STAMP )
+			VALUES ( #roleTypeIdFrom#
+				  , #roleTypeIdTo#
+				  , #partyIdFrom#
+				  , #partyIdTo#
+				  , #fromDate#
+				  , #thruDate#
+				  , #terminationReasonId#
+				  , #terminationTypeId#
+				  , #lastUpdatedStamp#
+				  , #lastUpdatedTxStamp#
+				  , #createdStamp#
+				  , #createdTxStamp# )
+		]]>
+	</insert>
+	
+	<update id="employmentDAO.updateEmployment_S">
+		<![CDATA[
+			UPDATE employment
+			SET ROLE_TYPE_ID_FROM=#roleTypeIdFrom#
+				, ROLE_TYPE_ID_TO=#roleTypeIdTo#
+				, PARTY_ID_FROM=#partyIdFrom#
+				, PARTY_ID_TO=#partyIdTo#
+				, FROM_DATE=#fromDate#
+				, THRU_DATE=#thruDate#
+				, TERMINATION_REASON_ID=#terminationReasonId#
+				, TERMINATION_TYPE_ID=#terminationTypeId#
+				, LAST_UPDATED_STAMP=#lastUpdatedStamp#
+				, LAST_UPDATED_TX_STAMP=#lastUpdatedTxStamp#
+				, CREATED_STAMP=#createdStamp#
+				, CREATED_TX_STAMP=#createdTxStamp#
+			]]>
+	</update>
+	
+	<delete id="employmentDAO.deleteEmployment_S">
+		<![CDATA[
+			DELETE FROM employment 
+			]]>
+	</delete>
+	
+	<select id="employmentDAO.selectEmployment_S" resultMap="employment">
+		<![CDATA[
+			SELECT
+				ROLE_TYPE_ID_FROM
+				, ROLE_TYPE_ID_TO
+				, PARTY_ID_FROM
+				, PARTY_ID_TO
+				, FROM_DATE
+				, THRU_DATE
+				, TERMINATION_REASON_ID
+				, TERMINATION_TYPE_ID
+				, LAST_UPDATED_STAMP
+				, LAST_UPDATED_TX_STAMP
+				, CREATED_STAMP
+				, CREATED_TX_STAMP
+			FROM employment
+			]]>
+	</select>
+	
+	<select id="employmentDAO.selectEmploymentList_D" parameterClass="employmentSerarchVO" resultClass="egovMap">
+			SELECT
+								ROLE_TYPE_ID_FROM
+								, ROLE_TYPE_ID_TO
+								, PARTY_ID_FROM
+								, PARTY_ID_TO
+								, FROM_DATE
+								, THRU_DATE
+								, TERMINATION_REASON_ID
+								, TERMINATION_TYPE_ID
+								, LAST_UPDATED_STAMP
+								, LAST_UPDATED_TX_STAMP
+								, CREATED_STAMP
+								, CREATED_TX_STAMP
+					FROM employment
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				ROLE_TYPE_ID_FROM = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				ROLE_TYPE_ID_TO LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+				ORDER BY FROM_DATE DESC
+				limit #firstIndex#, #recordCountPerPage#	
+	</select>	
+	<select id="employmentDAO.selectEmploymentListTotCnt_S" parameterClass="employmentSerarchVO" resultClass="int">
+			SELECT COUNT(*) totcnt
+			FROM employment
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				ROLE_TYPE_ID_FROM = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				ROLE_TYPE_ID_TO LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+	</select>
+
+</sqlMap>

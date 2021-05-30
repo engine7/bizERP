@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Employees">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="employeesSerarchVO" type="egovframework.bizerp.hmr.employees.service.EmployeesDefaultVO"/>
+	
+	<resultMap id="employees" class="egovframework.bizerp.hmr.employees.service.EmployeesVO">
+		<result property="partyId" column="PARTY_ID" columnIndex="1"/>
+		<result property="partyTypeId" column="PARTY_TYPE_ID" columnIndex="2"/>
+		<result property="externalId" column="EXTERNAL_ID" columnIndex="3"/>
+		<result property="preferredCurrencyUomId" column="PREFERRED_CURRENCY_UOM_ID" columnIndex="4"/>
+		<result property="description" column="DESCRIPTION" columnIndex="5"/>
+		<result property="statusId" column="STATUS_ID" columnIndex="6"/>
+		<result property="createdDate" column="CREATED_DATE" columnIndex="7"/>
+		<result property="createdByUserLogin" column="CREATED_BY_USER_LOGIN" columnIndex="8"/>
+		<result property="lastModifiedDate" column="LAST_MODIFIED_DATE" columnIndex="9"/>
+		<result property="lastModifiedByUserLogin" column="LAST_MODIFIED_BY_USER_LOGIN" columnIndex="10"/>
+		<result property="dataSourceId" column="DATA_SOURCE_ID" columnIndex="11"/>
+		<result property="isUnread" column="IS_UNREAD" columnIndex="12"/>
+		<result property="lastUpdatedStamp" column="LAST_UPDATED_STAMP" columnIndex="13"/>
+		<result property="lastUpdatedTxStamp" column="LAST_UPDATED_TX_STAMP" columnIndex="14"/>
+		<result property="createdStamp" column="CREATED_STAMP" columnIndex="15"/>
+		<result property="createdTxStamp" column="CREATED_TX_STAMP" columnIndex="16"/>
+	</resultMap>
+	
+	<!-- [조회(R)](시작)===================================================================================================================== -->
+	
+	<!-- 직원전체조회 -->
+	<select id="employeesDAO.selectEmployees_S" resultMap="employees">
+		<![CDATA[
+			/* employeesDAO.selectEmployees_S */
+			SELECT 	PTY.PARTY_ID, PTY.PARTY_TYPE_ID, PTY.DESCRIPTION, PTY.STATUS_ID, PER.FIRST_NAME, PER.MIDDLE_NAME,
+					PER.LAST_NAME, PER.FIRST_NAME_LOCAL, PER.LAST_NAME_LOCAL, PER.PERSONAL_TITLE, PER.SUFFIX,
+			        PTYGRP.GROUP_NAME, PTYGRP.GROUP_NAME_LOCAL 
+			  FROM	PARTY PTY
+					LEFT OUTER JOIN PERSON PER ON PTY.PARTY_ID = PER.PARTY_ID
+			        LEFT OUTER JOIN PARTY_GROUP PTYGRP ON PTY.PARTY_ID = PTYGRP.PARTY_ID 
+			 WHERE	1 = 1
+			]]>
+	</select>
+	
+	<!-- 직원리스트조회 -->
+	<select id="employeesDAO.selectEmployeesList_D" parameterClass="employeesSerarchVO" resultClass="egovMap">
+			/* employeesDAO.selectEmployeesList_D */
+			SELECT 	PTY.PARTY_ID, PTY.PARTY_TYPE_ID, PTY.DESCRIPTION, PTY.STATUS_ID, PER.FIRST_NAME, PER.MIDDLE_NAME,
+					PER.LAST_NAME, PER.FIRST_NAME_LOCAL, PER.LAST_NAME_LOCAL, PER.PERSONAL_TITLE, PER.SUFFIX,
+			        PTYGRP.GROUP_NAME, PTYGRP.GROUP_NAME_LOCAL 
+			  FROM	PARTY PTY
+					LEFT OUTER JOIN PERSON PER ON PTY.PARTY_ID = PER.PARTY_ID
+			        LEFT OUTER JOIN PARTY_GROUP PTYGRP ON PTY.PARTY_ID = PTYGRP.PARTY_ID 
+			 WHERE	1 = 1
+			<isEqual prepend="AND" property="searchCondition" compareValue="PARTY_ID">
+				PTY.PARTY_ID LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="PARTY_TYPE_ID">
+				PTY.PARTY_TYPE_ID LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+				ORDER BY PTY.PARTY_ID ASC
+				limit #firstIndex#, #recordCountPerPage#	
+	</select>
+	
+	<!-- 직원리스트수조회 -->	
+	<select id="employeesDAO.selectEmployeesListTotCnt_S" parameterClass="employeesSerarchVO" resultClass="int">
+			/* employeesDAO.selectEmployeesListTotCnt_S */
+			SELECT 	COUNT(*) totcnt
+			  FROM	ofbiz.PARTY PTY
+					LEFT OUTER JOIN ofbiz.PERSON PER ON PTY.PARTY_ID = PER.PARTY_ID
+			        LEFT OUTER JOIN ofbiz.PARTY_GROUP PTYGRP ON PTY.PARTY_ID = PTYGRP.PARTY_ID 
+			 WHERE	1 = 1
+			<isEqual prepend="AND" property="searchCondition" compareValue="PARTY_ID">
+				PTY.PARTY_ID LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="PARTY_TYPE_ID">
+				PTY.PARTY_TYPE_ID LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+	</select>
+	
+	<!-- [조회(R)](끝)===================================================================================================================== -->
+	
+	<!-- [입력(C)](시작)===================================================================================================================== -->
+	
+	<!-- >직원(파트)입력 [PARTY / PERSON, PARTY_GROUP] -->
+	<insert id="employeesDAO.insertEmployees_S">
+		<![CDATA[
+			INSERT INTO PARTY 
+			( 
+				  PARTY_ID
+				, PARTY_TYPE_ID
+				, EXTERNAL_ID
+				, PREFERRED_CURRENCY_UOM_ID
+				, DESCRIPTION
+				, STATUS_ID
+				, CREATED_DATE
+				, CREATED_BY_USER_LOGIN
+				, LAST_MODIFIED_DATE
+				, LAST_MODIFIED_BY_USER_LOGIN
+				, DATA_SOURCE_ID
+				, IS_UNREAD
+				, LAST_UPDATED_STAMP
+				, LAST_UPDATED_TX_STAMP
+				, CREATED_STAMP
+				, CREATED_TX_STAMP
+			)
+			VALUES (
+				  #partyId#
+				, #partyTypeId#
+				, #externalId#
+				, #preferredCurrencyUomId#
+				, #description#
+				, #statusId#
+				, #createdDate#
+				, #createdByUserLogin#
+				, #lastModifiedDate#
+				, #lastModifiedByUserLogin#
+				, #dataSourceId#
+				, #isUnread#
+				, #lastUpdatedStamp#
+				, #lastUpdatedTxStamp#
+				, #createdStamp#
+				, #createdTxStamp#
+			)
+		]]>
+	</insert>
+	
+	<!-- [입력(C)](끝)===================================================================================================================== -->
+	
+	<!-- [수정(U)](시작)===================================================================================================================== -->
+	
+	<!-- 직원(파트)수정 [PARTY / PERSON, PARTY_GROUP] -->
+	<update id="employeesDAO.updateEmployees_S">
+		<![CDATA[
+			UPDATE	PARTY
+			   SET	  PARTY_TYPE_ID						= #partyTypeId#
+					, EXTERNAL_ID                       = #externalId#
+					, PREFERRED_CURRENCY_UOM_ID         = #preferredCurrencyUomId#
+					, DESCRIPTION                       = #description#
+					, STATUS_ID                         = #statusId#
+					, CREATED_DATE                      = #createdDate#
+					, CREATED_BY_USER_LOGIN             = #createdByUserLogin#
+					, LAST_MODIFIED_DATE                = #lastModifiedDate#
+					, LAST_MODIFIED_BY_USER_LOGIN       = #lastModifiedByUserLogin#
+					, DATA_SOURCE_ID                    = #dataSourceId#
+					, IS_UNREAD                         = #isUnread#
+					, LAST_UPDATED_STAMP                = #lastUpdatedStamp#
+					, LAST_UPDATED_TX_STAMP             = #lastUpdatedTxStamp#
+			  WHERE	1 = 1
+			    AND	PARTY_ID							=  #partyId#
+			]]>
+	</update>
+	
+	<!-- [수정(U)](끝)===================================================================================================================== -->
+
+	<!-- [삭제(D)](시작)===================================================================================================================== -->
+	
+	<!-- >직원(파트)삭제 [PARTY / PERSON, PARTY_GROUP] -->
+	<delete id="employeesDAO.deleteEmployees_S">
+		<![CDATA[
+			DELETE FROM PARTY
+			      WHERE	1 = 1
+			        AND	PARTY_ID =  #partyId# 
+			]]>
+	</delete>
+	
+	<!-- [삭제(D)](끝)===================================================================================================================== -->
+	
+</sqlMap>
